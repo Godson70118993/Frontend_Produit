@@ -19,7 +19,7 @@ const ProductList = ({ searchTerm }) => {
     }, []);
 
     const fetchProducts = () => {
-        axios.get('https://d8fa0eab8719.ngrok-free.app/products/', {
+        axios.get('https://f506191e6049.ngrok-free.app/products/', {
             headers: ngrokHeaders
         })
             .then(response => {
@@ -52,7 +52,7 @@ const ProductList = ({ searchTerm }) => {
     };
 
     const deleteProduct = (id) => {
-        axios.delete(`https://d8fa0eab8719.ngrok-free.app/products/${id}`, {
+        axios.delete(`https://f506191e6049.ngrok-free.app/products/${id}`, {
             headers: ngrokHeaders
         })
             .then(response => {

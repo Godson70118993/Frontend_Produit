@@ -20,7 +20,7 @@ const AddProduct = () => {
 
         const product = { name, description, price: parseFloat(price) };
 
-        axios.post('https://d8fa0eab8719.ngrok-free.app/products/', product)
+        axios.post('https://f506191e6049.ngrok-free.app/products/', product)
             .then(() => navigate('/'))
             .catch(error => {
                 console.error("Erreur lors de la création du produit :", error);

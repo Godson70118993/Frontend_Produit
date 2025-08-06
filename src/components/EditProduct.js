@@ -17,7 +17,7 @@ const EditProduct = () => {
     };
 
     useEffect(() => {
-        axios.get(`https://d8fa0eab8719.ngrok-free.app/products/${id}`)
+        axios.get(`https://f506191e6049.ngrok-free.app/products/${id}`)
             .then(response => {
                 const { name, description, price } = response.data;
                 setName(name || '');
@@ -37,7 +37,7 @@ const EditProduct = () => {
             price: parseFloat(price)
         };
 
-        axios.put(`https://d8fa0eab8719.ngrok-free.app/products/${id}`, product)
+        axios.put(`https://f506191e6049.ngrok-free.app/products/${id}`, product)
             .then(() => {
                 navigate('/');
             })
