@@ -1,6 +1,13 @@
+// AddProduct.js
+
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+
+const ngrokHeaders = {
+    'ngrok-skip-browser-warning': 'true',
+    'Content-Type': 'application/json'
+};
 
 const AddProduct = () => {
     const [name, setName] = useState('');
@@ -10,35 +17,33 @@ const AddProduct = () => {
 
     const onSubmit = (e) => {
         e.preventDefault();
-        // Ensure price is parsed as a float
+
         const product = { name, description, price: parseFloat(price) };
-        axios.post('http://127.0.0.1:8001/products/', product)
+
+        axios.post('https://d8fa0eab8719.ngrok-free.app/products/', product)
             .then(() => navigate('/'))
             .catch(error => {
-                console.error("Error creating product!", error);
+                console.error("Erreur lors de la création du produit :", error);
+
                 if (error.response) {
-                    // The request was made and the server responded with a status code
-                    // that falls out of the range of 2xx
                     console.error("Data:", error.response.data);
                     console.error("Status:", error.response.status);
                     console.error("Headers:", error.response.headers);
                 } else if (error.request) {
-                    // The request was made but no response was received
-                    console.error("No response received:", error.request);
+                    console.error("Aucune réponse reçue :", error.request);
                 } else {
-                    // Something happened in setting up the request that triggered an Error
-                    console.error("Error message:", error.message);
+                    console.error("Erreur de configuration de la requête :", error.message);
                 }
             });
     };
 
     return (
         <div style={styles.container}>
-            <h2>Add Product</h2>
+            <h2>Ajouter un produit</h2>
             <form onSubmit={onSubmit} style={styles.form}>
                 <input
                     type="text"
-                    placeholder="Name"
+                    placeholder="Nom"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
@@ -54,13 +59,13 @@ const AddProduct = () => {
                 <input
                     type="number"
                     step="0.01"
-                    placeholder="Price"
+                    placeholder="Prix"
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
                     required
                     style={styles.input}
                 />
-                <button type="submit" style={styles.button}>Add</button>
+                <button type="submit" style={styles.button}>Ajouter</button>
             </form>
         </div>
     );

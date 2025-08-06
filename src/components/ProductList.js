@@ -8,24 +8,33 @@ const ProductList = ({ searchTerm }) => {
     const [products, setProducts] = useState([]);
     const [error, setError] = useState('');
 
+    // Configuration des en-têtes pour ngrok
+    const ngrokHeaders = {
+        'ngrok-skip-browser-warning': 'true',
+        'Content-Type': 'application/json'
+    };
+
     useEffect(() => {
         fetchProducts();
     }, []);
 
     const fetchProducts = () => {
-        axios.get('http://127.0.0.1:8001/products/')
+        axios.get('https://d8fa0eab8719.ngrok-free.app/products/', {
+            headers: ngrokHeaders
+        })
             .then(response => {
                 console.log("Réponse brute :", response.data);
 
-                // Si c'est un tableau, on le garde, sinon on essaye d'en extraire un
                 if (Array.isArray(response.data)) {
                     setProducts(response.data);
+                    setError(''); // Effacer l'erreur en cas de succès
                 } else if (Array.isArray(response.data.products)) {
                     setProducts(response.data.products);
+                    setError(''); // Effacer l'erreur en cas de succès
                 } else {
                     setError("Format inattendu des données reçues.");
                     console.error("Format inattendu :", response.data);
-                    setProducts([]); // éviter le crash
+                    setProducts([]);
                 }
             })
             .catch(error => {
@@ -43,7 +52,9 @@ const ProductList = ({ searchTerm }) => {
     };
 
     const deleteProduct = (id) => {
-        axios.delete(`http://127.0.0.1:8001/products/${id}`)
+        axios.delete(`https://d8fa0eab8719.ngrok-free.app/products/${id}`, {
+            headers: ngrokHeaders
+        })
             .then(response => {
                 console.log("Produit supprimé avec succès:", response.data);
                 setProducts(prevProducts => prevProducts.filter(product => product.id !== id));

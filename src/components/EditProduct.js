@@ -11,6 +11,11 @@ const EditProduct = () => {
     const [price, setPrice] = useState('');
     const navigate = useNavigate();
 
+    const ngrokHeaders = {
+        'ngrok-skip-browser-warning': 'true',
+        'Content-Type': 'application/json'
+    };
+
     useEffect(() => {
         axios.get(`https://d8fa0eab8719.ngrok-free.app/products/${id}`)
             .then(response => {
