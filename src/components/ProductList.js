@@ -13,7 +13,7 @@ const ProductList = ({ searchTerm }) => {
     }, []);
 
     const fetchProducts = () => {
-        axios.get('hhttps://897fc7cb9e96.ngrok-free.app/')
+        axios.get('http://127.0.0.1:8001/products/')
             .then(response => {
                 console.log("Réponse brute :", response.data);
 
@@ -43,7 +43,7 @@ const ProductList = ({ searchTerm }) => {
     };
 
     const deleteProduct = (id) => {
-        axios.delete(`https://897fc7cb9e96.ngrok-free.app/productsDELETE/${id}`)
+        axios.delete(`http://127.0.0.1:8001/products/${id}`)
             .then(response => {
                 console.log("Produit supprimé avec succès:", response.data);
                 setProducts(prevProducts => prevProducts.filter(product => product.id !== id));

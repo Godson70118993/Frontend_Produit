@@ -12,7 +12,7 @@ const AddProduct = () => {
         e.preventDefault();
         // Ensure price is parsed as a float
         const product = { name, description, price: parseFloat(price) };
-        axios.post('https://897fc7cb9e96.ngrok-free.app/', product) // Correct URL and endpoint
+        axios.post('http://127.0.0.1:8001/products/', product)
             .then(() => navigate('/'))
             .catch(error => {
                 console.error("Error creating product!", error);

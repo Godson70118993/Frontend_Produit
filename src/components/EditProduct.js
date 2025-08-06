@@ -12,23 +12,15 @@ const EditProduct = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get(`https://897fc7cb9e96.ngrok-free.app/${id}`)
+        axios.get(`https://d8fa0eab8719.ngrok-free.app/products/${id}`)
             .then(response => {
                 const { name, description, price } = response.data;
-                setName(name || ''); // Ensure default to empty string if null/undefined
+                setName(name || '');
                 setDescription(description || '');
-                setPrice(price || ''); // Ensure default to empty string if null/undefined
+                setPrice(price || '');
             })
             .catch(error => {
                 console.error("Error fetching product details:", error);
-                if (error.response) {
-                    console.error("Data:", error.response.data);
-                    console.error("Status:", error.response.status);
-                } else if (error.request) {
-                    console.error("No response from backend for fetch product. Is it running?", error.request);
-                } else {
-                    console.error("Error setting up fetch request:", error.message);
-                }
             });
     }, [id]);
 
@@ -37,36 +29,25 @@ const EditProduct = () => {
         const product = {
             name,
             description,
-            price: parseFloat(price) // Ensure price is a number
+            price: parseFloat(price)
         };
 
-        // CORRECTED: Ensure the PUT endpoint matches your FastAPI backend!
-        axios.put(`https://897fc7cb9e96.ngrok-free.app/${id}`, product)
+        axios.put(`https://d8fa0eab8719.ngrok-free.app/products/${id}`, product)
             .then(() => {
-                console.log("Product updated successfully!");
-                navigate('/'); // Navigate back to product list on success
+                navigate('/');
             })
             .catch(error => {
                 console.error("Error updating product:", error);
-                if (error.response) {
-                    console.error("Data:", error.response.data);
-                    console.error("Status:", error.response.status);
-                    console.error("Headers:", error.response.headers);
-                } else if (error.request) {
-                    console.error("No response from backend for update. Is it running?", error.request);
-                } else {
-                    console.error("Error setting up update request:", error.message);
-                }
             });
     };
 
     return (
         <div style={styles.container}>
-            <h2>Edit Product</h2>
+            <h2>Modifier un produit</h2>
             <form onSubmit={onSubmit} style={styles.form}>
                 <input
                     type="text"
-                    placeholder="Name"
+                    placeholder="Nom"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
@@ -82,13 +63,13 @@ const EditProduct = () => {
                 <input
                     type="number"
                     step="0.01"
-                    placeholder="Price"
+                    placeholder="Prix"
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
                     required
                     style={styles.input}
                 />
-                <button type="submit" style={styles.button}>Update</button>
+                <button type="submit" style={styles.button}>Mettre à jour</button>
             </form>
         </div>
     );
