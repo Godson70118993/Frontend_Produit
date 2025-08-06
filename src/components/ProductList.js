@@ -6,69 +6,82 @@ import { Link } from 'react-router-dom';
 
 const ProductList = ({ searchTerm }) => {
     const [products, setProducts] = useState([]);
+    const [error, setError] = useState('');
 
-    // Fetch products on component mount
     useEffect(() => {
         fetchProducts();
     }, []);
 
-    // Helper function to fetch products
     const fetchProducts = () => {
-        axios.get('http://localhost:8001/products/')
+        axios.get('hhttps://897fc7cb9e96.ngrok-free.app/')
             .then(response => {
-                setProducts(response.data);
+                console.log("Réponse brute :", response.data);
+
+                // Si c'est un tableau, on le garde, sinon on essaye d'en extraire un
+                if (Array.isArray(response.data)) {
+                    setProducts(response.data);
+                } else if (Array.isArray(response.data.products)) {
+                    setProducts(response.data.products);
+                } else {
+                    setError("Format inattendu des données reçues.");
+                    console.error("Format inattendu :", response.data);
+                    setProducts([]); // éviter le crash
+                }
             })
             .catch(error => {
-                console.error("Error fetching products:", error);
-                // More detailed error logging for network issues
+                console.error("Erreur lors de la récupération des produits:", error);
+                setError("Erreur réseau ou serveur. Impossible de charger les produits.");
                 if (error.response) {
                     console.error("Data:", error.response.data);
                     console.error("Status:", error.response.status);
                 } else if (error.request) {
-                    console.error("No response received from backend. Is it running?", error.request);
+                    console.error("Pas de réponse du backend:", error.request);
                 } else {
-                    console.error("Error setting up request:", error.message);
+                    console.error("Erreur de configuration de la requête:", error.message);
                 }
             });
     };
 
     const deleteProduct = (id) => {
-        // Ensure the ID is passed correctly
-        axios.delete(`http://localhost:8001/productsDELETE/${id}`) // Make sure this matches your backend endpoint
+        axios.delete(`https://897fc7cb9e96.ngrok-free.app/productsDELETE/${id}`)
             .then(response => {
-                // Check if the response indicates success
-                // FastAPI's JSONResponse with "message": "Product deleted" will return 200 OK
-                console.log("Product deleted successfully:", response.data);
-                // Only update the UI if the deletion was confirmed by the backend
-                setProducts(products.filter(product => product.id !== id));
+                console.log("Produit supprimé avec succès:", response.data);
+                setProducts(prevProducts => prevProducts.filter(product => product.id !== id));
             })
             .catch(error => {
-                console.error("Error deleting product:", error);
+                console.error("Erreur lors de la suppression du produit:", error);
                 if (error.response) {
                     console.error("Data:", error.response.data);
                     console.error("Status:", error.response.status);
                 } else if (error.request) {
-                    console.error("No response from backend for delete. Is it running?", error.request);
+                    console.error("Pas de réponse du backend pour delete:", error.request);
                 } else {
-                    console.error("Error setting up delete request:", error.message);
+                    console.error("Erreur de configuration de la requête delete:", error.message);
                 }
             });
     };
 
-    const filteredProducts = products.filter(product =>
-        product.name.toLowerCase().includes(searchTerm?.toLowerCase() || '') // Added || '' for safer initial render
-    );
+    const filteredProducts = Array.isArray(products)
+        ? products.filter(product =>
+            product.name?.toLowerCase().includes(searchTerm?.toLowerCase() || '')
+        )
+        : [];
 
     return (
         <div style={styles.container}>
-            <h2>Product List</h2>
+            <h2>Liste des produits</h2>
+
+            {error && (
+                <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>
+            )}
+
             <div style={{ overflowX: 'auto' }}>
                 <table style={styles.table}>
                     <thead>
                         <tr>
-                            <th style={styles.th}>Name</th>
+                            <th style={styles.th}>Nom</th>
                             <th style={styles.th}>Description</th>
-                            <th style={styles.th}>Price</th>
+                            <th style={styles.th}>Prix</th>
                             <th style={styles.th}>Actions</th>
                         </tr>
                     </thead>
@@ -82,14 +95,14 @@ const ProductList = ({ searchTerm }) => {
                                     <td style={styles.td}>
                                         <div style={styles.actionContainer}>
                                             <Link to={`/edit/${product.id}`} className="button" style={{ ...styles.button, ...styles.editBtn }}>
-                                                Edit
+                                                Modifier
                                             </Link>
                                             <button
-                                                // Ensure the ID is correctly passed to deleteProduct
-                                                onClick={() => deleteProduct(product.id)} className="button"
+                                                onClick={() => deleteProduct(product.id)}
+                                                className="button"
                                                 style={{ ...styles.button, ...styles.deleteBtn }}
                                             >
-                                                Delete
+                                                Supprimer
                                             </button>
                                         </div>
                                     </td>
@@ -98,7 +111,7 @@ const ProductList = ({ searchTerm }) => {
                         ) : (
                             <tr>
                                 <td colSpan="4" style={{ textAlign: 'center', padding: '20px' }}>
-                                    No products found.
+                                    Aucun produit trouvé.
                                 </td>
                             </tr>
                         )}

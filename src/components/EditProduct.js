@@ -12,7 +12,7 @@ const EditProduct = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get(`http://localhost:8001/products/${id}`)
+        axios.get(`https://897fc7cb9e96.ngrok-free.app/${id}`)
             .then(response => {
                 const { name, description, price } = response.data;
                 setName(name || ''); // Ensure default to empty string if null/undefined
@@ -41,7 +41,7 @@ const EditProduct = () => {
         };
 
         // CORRECTED: Ensure the PUT endpoint matches your FastAPI backend!
-        axios.put(`http://localhost:8001/productsPUT/${id}`, product)
+        axios.put(`https://897fc7cb9e96.ngrok-free.app/${id}`, product)
             .then(() => {
                 console.log("Product updated successfully!");
                 navigate('/'); // Navigate back to product list on success
