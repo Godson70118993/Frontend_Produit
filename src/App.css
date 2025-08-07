@@ -6,3 +6,166 @@
   transform: scale(1.05);
   opacity: 0.9;
 }
+
+/* App.css */
+
+/* Styles pour tous les écrans */
+.navbar {
+  background-color: #333;
+  padding: 15px 30px;
+  color: #fff;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.titleMobile {
+  margin: 0;
+  font-size: 18px;
+  color: #FFFFFF;
+}
+
+.menuToggle {
+  background-color: transparent;
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* Styles pour les écrans de bureau */
+@media (min-width: 768px) {
+  .navbarInner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+  }
+
+  .mobileHeader, .mobileMenu {
+      display: none;
+  }
+
+  .navbarLeft {
+      order: 1;
+  }
+
+  .navbarCenter {
+      order: 2;
+      flex-grow: 1;
+      text-align: center;
+  }
+
+  .titleDesktop {
+      margin: 0;
+      color: #FFFFFF;
+      font-size: 24px;
+  }
+
+  .navbarRight {
+      order: 3;
+  }
+}
+
+/* Styles pour les téléphones mobiles */
+@media (max-width: 767px) {
+  .navbarInner {
+      display: none;
+  }
+
+  .navbar {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+  }
+
+  .mobileHeader {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+  }
+
+  .mobileMenu {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      gap: 10px;
+      padding-top: 15px;
+      align-items: stretch;
+  }
+
+  .buttonMobile, .searchMobile {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+  }
+
+  .buttonMobile {
+      background: #4CAF50;
+      color: #fff;
+      text-decoration: none;
+      text-align: center;
+  }
+}
+
+/* Animations et transitions */
+.button, .buttonMobile, .button.edit-btn, .button.delete-btn {
+  transition: transform 0.9s ease, background-color 0.9s ease;
+}
+
+.button:hover, .buttonMobile:hover, .button.edit-btn:hover, .button.delete-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.button {
+  background: #4CAF50;
+  color: #fff;
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 4px;
+  white-space: nowrap;
+  border: none;
+  cursor: pointer;
+}
+
+.search {
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  max-width: 300px;
+}
+.search:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.5);
+}
+
+/* Boutons de la liste des produits */
+.edit-btn {
+  background: #FFEB3B;
+  color: #333;
+}
+.delete-btn {
+  background: #f44336;
+  color: #fff;
+}
+.edit-btn:hover {
+  background-color: #ffc107;
+}
+.delete-btn:hover {
+  background-color: #d32f2f;
+}
+
+/* Modal de suppression */
+.modal-button {
+  transition: background-color 0.9s ease, transform 0.9s ease;
+}
+.modal-button:hover {
+  transform: scale(1.05);
+}

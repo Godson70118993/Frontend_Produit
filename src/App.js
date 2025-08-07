@@ -1,28 +1,67 @@
+// App.js
+
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import ProductList from './components/ProductList';
 import AddProduct from './components/AddProduct';
 import EditProduct from './components/EditProduct';
+import './App.css'; 
 
 function App() {
     const [searchTerm, setSearchTerm] = useState('');
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+    const toggleMenu = () => {
+        setIsMenuOpen(!isMenuOpen);
+    };
 
     return (
         <Router>
-            <nav style={styles.navbar}>
-                <div style={styles.left}>
-                    <Link to="/add" style={styles.button}>Add Product</Link>
+            <nav className="navbar">
+                <div className="navbarInner">
+                    {/* Bouton pour ajouter un produit (toujours affiché) */}
+                    <div className="navbarLeft">
+                        <Link to="/add" className="button" onClick={() => setIsMenuOpen(false)}>
+                            Ajouter un produit
+                        </Link>
+                    </div>
+
+                    {/* Titre de l'application (toujours au centre sur les grands écrans) */}
+                    <div className="navbarCenter">
+                        <h2 className="titleDesktop">Application de gestion de produits</h2>
+                    </div>
+
+                    {/* Barre de recherche (toujours à droite) */}
+                    <div className="navbarRight">
+                        <input
+                            type="text"
+                            placeholder="Rechercher un produit…"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="search"
+                        />
+                    </div>
                 </div>
-                <div style={styles.center}>
-                    <h2 style={{ margin: 0 }}>Product Management Application</h2>
+
+                {/* Section mobile avec menu burger et titre */}
+                <div className="mobileHeader">
+                    <h2 className="titleMobile">Application de gestion de produits</h2>
+                    <button className="menuToggle" onClick={toggleMenu}>
+                        ☰
+                    </button>
                 </div>
-                <div style={styles.right}>
+
+                {/* Contenu du menu mobile (bouton et recherche) */}
+                <div className={`mobileMenu ${isMenuOpen ? 'open' : ''}`}>
+                    <Link to="/add" className="buttonMobile" onClick={() => setIsMenuOpen(false)}>
+                        Ajouter un produit
+                    </Link>
                     <input
                         type="text"
-                        placeholder="Search product..."
+                        placeholder="Rechercher un produit…"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        style={styles.search}
+                        className="searchMobile"
                     />
                 </div>
             </nav>
@@ -37,39 +76,5 @@ function App() {
         </Router>
     );
 }
-
-const styles = {
-    navbar: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap',
-        backgroundColor: '#333',
-        padding: '15px 30px',
-        color: '#fff',
-        // Propriétés ajoutées pour fixer la barre de navigation
-        position: 'fixed', 
-        top: 0,
-        width: '100%',
-        zIndex: 1000, 
-    },
-    left: { flex: 1, minWidth: '150px', marginBottom: '10px' },
-    center: { flex: 1, textAlign: 'center', minWidth: '200px', marginBottom: '10px' },
-    right: { flex: 1, textAlign: 'right', minWidth: '150px' },
-    button: {
-        background: '#4CAF50',
-        color: '#fff',
-        padding: '10px 20px',
-        textDecoration: 'none',
-        borderRadius: '4px',
-    },
-    search: {
-        padding: '8px',
-        borderRadius: '4px',
-        border: '1px solid #ccc',
-        maxWidth: '100%',
-    },
-};
-
 
 export default App;
