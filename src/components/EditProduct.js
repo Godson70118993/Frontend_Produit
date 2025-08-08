@@ -17,7 +17,7 @@ const EditProduct = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get(`https://01367a62af2a.ngrok-free.app/products/${id}`, {
+        axios.get(`https://backend-produit-6.onrender.com/products/${id}`, {
             headers: ngrokHeaders
         })
             .then(response => {
@@ -46,7 +46,7 @@ const EditProduct = () => {
             price: parseFloat(price)
         };
 
-        axios.put(`https://01367a62af2a.ngrok-free.app/products/${id}`, product, {
+        axios.put(`https://backend-produit-6.onrender.com/products/${id}`, product, {
             headers: ngrokHeaders
         })
             .then(() => {

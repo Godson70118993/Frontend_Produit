@@ -169,3 +169,103 @@
 .modal-button:hover {
   transform: scale(1.05);
 }
+
+
+/*
+  Styles de base et animations avancées pour tous les boutons de l'application.
+  Collez ce code dans votre fichier 'index.css'.
+*/
+
+/* Styles pour tous les boutons */
+.button {
+  /* Propriétés de base */
+  padding: 12px 24px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  
+  /* Couleur de fond par défaut (peut être surchargée) */
+  background-color: #4CAF50;
+  
+  /* Propriété de transition pour des animations fluides */
+  transition: background-color 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+/* Effet au survol de la souris */
+.button:hover {
+  /* Changement de couleur de fond plus visible */
+  background-color: #45a049;
+  /* Crée un effet de "pop" */
+  transform: scale(1.05); 
+  /* Ombre plus prononcée */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); 
+}
+
+/* Effet au clic du bouton */
+.button:active {
+  /* Crée un effet d'enfoncement */
+  transform: scale(0.98); 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Styles pour le bouton Annuler */
+.cancel-button {
+  background-color: #888;
+}
+
+/* Effet de survol pour le bouton Annuler */
+.cancel-button:hover {
+  background-color: #666;
+  transform: scale(1.05);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* ------------------ Styles spécifiques pour les boutons Modifier et Supprimer ------------------ */
+
+/* Bouton Modifier */
+.edit-btn {
+  background-color: #FFEB3B; /* Jaune */
+  color: #333;
+}
+
+/* Effet de survol pour le bouton Modifier */
+.edit-btn:hover {
+  background-color: #ffc107; /* Jaune plus foncé */
+  transform: scale(1.05);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Effet au clic du bouton Modifier */
+.edit-btn:active {
+  transform: scale(0.98);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Bouton Supprimer */
+.delete-btn {
+  background-color: #f44336; /* Rouge */
+  color: #fff;
+}
+
+/* Effet de survol pour le bouton Supprimer */
+.delete-btn:hover {
+  background-color: #d32f2f; /* Rouge plus foncé */
+  transform: scale(1.05);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Effet au clic du bouton Supprimer */
+.delete-btn:active {
+  transform: scale(0.98);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/*
+Pour utiliser ces styles, assurez-vous de donner la classe
+'button edit-btn' ou 'button delete-btn' à vos boutons dans le code HTML/JSX.
+*/
+

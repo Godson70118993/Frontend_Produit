@@ -24,7 +24,7 @@ const AddProduct = () => {
 
         const product = { name, description, price: parseFloat(price) };
 
-        axios.post('https://01367a62af2a.ngrok-free.app/products/', product, {
+        axios.post('https://backend-produit-6.onrender.com/products/', product, {
             headers: ngrokHeaders
         })
             .then(() => navigate('/'))
