@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 
-
+const ngrokHeaders = {
+    'ngrok-skip-browser-warning': 'true',
+    'Content-Type': 'application/json'
+};
 
 const EditProduct = () => {
     const { id } = useParams();

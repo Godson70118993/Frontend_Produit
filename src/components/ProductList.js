@@ -12,7 +12,10 @@ const ProductList = ({ searchTerm }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [isDeleting, setIsDeleting] = useState(false);
 
-    
+    const ngrokHeaders = {
+        'ngrok-skip-browser-warning': 'true',
+        'Content-Type': 'application/json'
+    };
 
     useEffect(() => {
         fetchProducts();
