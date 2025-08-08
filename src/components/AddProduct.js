@@ -2,10 +2,6 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const ngrokHeaders = {
-    'ngrok-skip-browser-warning': 'true',
-    'Content-Type': 'application/json'
-};
 
 const AddProduct = () => {
     const [name, setName] = useState('');
@@ -24,9 +20,7 @@ const AddProduct = () => {
 
         const product = { name, description, price: parseFloat(price) };
 
-        axios.post('https://backend-produit-6.onrender.com/products/', product, {
-            headers: ngrokHeaders
-        })
+        axios.post('https://backend-produit-6.onrender.com/products/', product)
             .then(() => navigate('/'))
             .catch(error => {
                 console.error("Erreur lors de la création du produit :", error);

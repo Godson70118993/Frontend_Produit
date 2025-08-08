@@ -2,10 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 
-const ngrokHeaders = {
-    'ngrok-skip-browser-warning': 'true',
-    'Content-Type': 'application/json'
-};
+
 
 const EditProduct = () => {
     const { id } = useParams();
@@ -17,9 +14,7 @@ const EditProduct = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get(`https://backend-produit-6.onrender.com/products/${id}`, {
-            headers: ngrokHeaders
-        })
+        axios.get(`https://backend-produit-6.onrender.com/products/${id}`)
             .then(response => {
                 const { name, description, price } = response.data;
                 setName(name || '');
@@ -46,9 +41,7 @@ const EditProduct = () => {
             price: parseFloat(price)
         };
 
-        axios.put(`https://backend-produit-6.onrender.com/products/${id}`, product, {
-            headers: ngrokHeaders
-        })
+        axios.put(`https://backend-produit-6.onrender.com/products/${id}`, product)
             .then(() => {
                 navigate('/');
             })

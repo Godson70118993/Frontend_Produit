@@ -12,10 +12,7 @@ const ProductList = ({ searchTerm }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [isDeleting, setIsDeleting] = useState(false);
 
-    const ngrokHeaders = {
-        'ngrok-skip-browser-warning': 'true',
-        'Content-Type': 'application/json'
-    };
+    
 
     useEffect(() => {
         fetchProducts();
@@ -23,9 +20,7 @@ const ProductList = ({ searchTerm }) => {
 
     const fetchProducts = () => {
         setIsLoading(true);
-        axios.get('https://backend-produit-6.onrender.com/products/', {
-            headers: ngrokHeaders
-        })
+        axios.get('https://backend-produit-6.onrender.com/products/')
             .then(response => {
                 if (Array.isArray(response.data)) {
                     setProducts(response.data);
