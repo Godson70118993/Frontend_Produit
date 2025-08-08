@@ -50,9 +50,7 @@ const ProductList = ({ searchTerm }) => {
     const confirmDelete = () => {
         if (!productToDelete) return;
         setIsDeleting(true);
-        axios.delete(`https://backend-produit-6.onrender.com/products/${productToDelete.id}`, {
-            headers: ngrokHeaders
-        })
+        axios.delete(`https://backend-produit-6.onrender.com/products/${productToDelete.id}`)
             .then(() => {
                 setProducts(prevProducts => prevProducts.filter(product => product.id !== productToDelete.id));
                 setShowDeleteModal(false);
