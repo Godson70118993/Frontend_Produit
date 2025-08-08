@@ -20,7 +20,7 @@ const ProductList = ({ searchTerm }) => {
 
     const fetchProducts = () => {
         setIsLoading(true);
-        axios.get('https://backend-produit-6.onrender.com/products/')
+        axios.get('https://backend-produit-7.onrender.com/products/')
             .then(response => {
                 if (Array.isArray(response.data)) {
                     setProducts(response.data);
@@ -50,7 +50,7 @@ const ProductList = ({ searchTerm }) => {
     const confirmDelete = () => {
         if (!productToDelete) return;
         setIsDeleting(true);
-        axios.delete(`https://backend-produit-6.onrender.com/products/${productToDelete.id}`)
+        axios.delete(`https://backend-produit-7.onrender.com/products/${productToDelete.id}`)
             .then(() => {
                 setProducts(prevProducts => prevProducts.filter(product => product.id !== productToDelete.id));
                 setShowDeleteModal(false);

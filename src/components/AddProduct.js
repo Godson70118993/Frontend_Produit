@@ -15,28 +15,31 @@ const AddProduct = () => {
         
         // Éviter les soumissions multiples
         if (isSubmitting) return;
-        
-        setIsSubmitting(true);
+setIsSubmitting(true);
 
-        const product = { name, description, price: parseFloat(price) };
+const product = {
+  name,
+  description,
+  price: isNaN(parseFloat(price)) ? 0 : parseFloat(price),
+};
 
-        axios.post('https://backend-produit-6.onrender.com/products/', product)
-            .then(() => navigate('/'))
-            .catch(error => {
-                console.error("Erreur lors de la création du produit :", error);
-                if (error.response) {
-                    console.error("Data:", error.response.data);
-                    console.error("Status:", error.response.status);
-                    console.error("Headers:", error.response.headers);
-                } else if (error.request) {
-                    console.error("Aucune réponse reçue :", error.request);
-                } else {
-                    console.error("Erreur de configuration de la requête :", error.message);
-                }
-            })
-            .finally(() => {
-                setIsSubmitting(false);
-            });
+axios.post('https://backend-produit-7.onrender.com/products/', product)
+  .then(() => navigate('/'))
+  .catch(error => {
+    console.error("Erreur lors de la création du produit :", error);
+    if (error.response) {
+      console.error("Data:", error.response.data);
+      console.error("Status:", error.response.status);
+      console.error("Headers:", error.response.headers);
+    } else if (error.request) {
+      console.error("Aucune réponse reçue :", error.request);
+    } else {
+      console.error("Erreur de configuration de la requête :", error.message);
+    }
+  })
+  .finally(() => {
+    setIsSubmitting(false);
+  });
     };
 
     // Fonction pour gérer l'annulation et rediriger
