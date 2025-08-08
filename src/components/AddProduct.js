@@ -2,10 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const ngrokHeaders = {
-    'ngrok-skip-browser-warning': 'true',
-    'Content-Type': 'application/json'
-};
+
 
 const AddProduct = () => {
     const [name, setName] = useState('');
