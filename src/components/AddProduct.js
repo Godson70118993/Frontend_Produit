@@ -23,7 +23,7 @@ const product = {
   price: isNaN(parseFloat(price)) ? 0 : parseFloat(price),
 };
 
-axios.post('https://backend-produit-7.onrender.com/products/', product)
+axios.post('https://backend-produit-8.onrender.com/products/', product)
   .then(() => navigate('/'))
   .catch(error => {
     console.error("Erreur lors de la création du produit :", error);

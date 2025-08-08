@@ -14,7 +14,7 @@ const EditProduct = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get(`https://backend-produit-7.onrender.com/products/${id}`)
+        axios.get(`https://backend-produit-8.onrender.com/products/${id}`)
             .then(response => {
                 const { name, description, price } = response.data;
                 setName(name || '');
@@ -41,7 +41,7 @@ const EditProduct = () => {
             price: parseFloat(price)
         };
 
-        axios.put(`https://backend-produit-7.onrender.com/products/${id}`, product)
+        axios.put(`https://backend-produit-8.onrender.com/products/${id}`, product)
             .then(() => {
                 navigate('/');
             })

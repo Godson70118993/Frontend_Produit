@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
-const API_BASE_URL = 'https://backend-produit-7.onrender.com';
+const API_BASE_URL = 'https://backend-produit-8.onrender.com';
 const REQUEST_TIMEOUT = 5000; // 5 seconds
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000; // 1 second
