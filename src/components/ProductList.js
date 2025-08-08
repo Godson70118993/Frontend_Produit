@@ -1,214 +1,11 @@
-// ProductList.js
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
-const ProductList = ({ searchTerm }) => {
-    const [products, setProducts] = useState([]);
-    const [error, setError] = useState('');
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [productToDelete, setProductToDelete] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [isDeleting, setIsDeleting] = useState(false);
-
-    
-
-    useEffect(() => {
-        fetchProducts();
-    }, []);
-
-    const fetchProducts = () => {
-        setIsLoading(true);
-        axios.get('https://backend-produit-7.onrender.com/products/')
-            .then(response => {
-                if (Array.isArray(response.data)) {
-                    setProducts(response.data);
-                    setError('');
-                } else if (Array.isArray(response.data.products)) {
-                    setProducts(response.data.products);
-                    setError('');
-                } else {
-                    setError("Format inattendu des données reçues.");
-                    setProducts([]);
-                }
-            })
-            .catch(error => {
-                console.error("Erreur lors de la récupération des produits:", error);
-                setError("Erreur réseau ou serveur. Impossible de charger les produits.");
-            })
-            .finally(() => {
-                setIsLoading(false);
-            });
-    };
-
-    const handleDeleteClick = (product) => {
-        setProductToDelete(product);
-        setShowDeleteModal(true);
-    };
-
-    const confirmDelete = () => {
-        if (!productToDelete) return;
-        setIsDeleting(true);
-        axios.delete(`https://backend-produit-7.onrender.com/products/${productToDelete.id}`)
-            .then(() => {
-                setProducts(prevProducts => prevProducts.filter(product => product.id !== productToDelete.id));
-                setShowDeleteModal(false);
-                setProductToDelete(null);
-            })
-            .catch(error => {
-                console.error("Erreur lors de la suppression du produit:", error);
-            })
-            .finally(() => {
-                setIsDeleting(false);
-            });
-    };
-
-    const cancelDelete = () => {
-        setShowDeleteModal(false);
-        setProductToDelete(null);
-    };
-
-    const filteredProducts = Array.isArray(products)
-        ? products.filter(product =>
-            product.name?.toLowerCase().includes(searchTerm?.toLowerCase() || '')
-        )
-        : [];
-
-    if (isLoading) {
-        return (
-            <div style={styles.container}>
-                <div style={styles.loadingContainer}>
-                    <div style={styles.spinner}></div>
-                    <p>Chargement des produits...</p>
-                </div>
-            </div>
-        );
-    }
-
-    return (
-        <div style={styles.container}>
-            <h2 style={{ ...styles.title, color: '#000' }}>Liste des produits</h2>
-            {error && (
-                <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>
-            )}
-
-            {/* Version mobile - Cards */}
-            <div style={styles.mobileView}>
-                {filteredProducts.length > 0 ? (
-                    filteredProducts.map(product => (
-                        <div key={product.id} style={styles.productCard}>
-                            <div style={styles.cardHeader}>
-                                <h3 style={styles.productName}>{product.name}</h3>
-                                <span style={styles.productPrice}>
-                                    {product.price ? `${product.price.toFixed(0)} FCFA` : 'N/A'}
-                                </span>
-                            </div>
-                            <p style={styles.productDescription}>
-                                {product.description || 'Aucune description'}
-                            </p>
-                            <div style={styles.cardActions}>
-                                <Link 
-                                    to={`/edit/${product.id}`} 
-                                    style={{ ...styles.mobileButton, ...styles.editBtnMobile }}
-                                >
-                                    Modifier
-                                </Link>
-                                <button
-                                    onClick={() => handleDeleteClick(product)}
-                                    style={{ ...styles.mobileButton, ...styles.deleteBtnMobile }}
-                                >
-                                    Supprimer
-                                </button>
-                            </div>
-                        </div>
-                    ))
-                ) : (
-                    <div style={styles.noProducts}>
-                        <p>Aucun produit trouvé.</p>
-                    </div>
-                )}
-            </div>
-
-            {/* Version desktop - Table */}
-            <div style={styles.desktopView}>
-                <table style={styles.table}>
-                    <thead>
-                        <tr>
-                            <th style={styles.th}>Nom</th>
-                            <th style={styles.th}>Description</th>
-                            <th style={styles.th}>Prix</th>
-                            <th style={styles.th}>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {filteredProducts.length > 0 ? (
-                            filteredProducts.map(product => (
-                                <tr key={product.id}>
-                                    <td style={styles.td}>{product.name}</td>
-                                    <td style={styles.td}>{product.description}</td>
-                                    <td style={styles.td}>
-                                        {product.price ? `${product.price.toFixed(0)} FCFA` : 'N/A'}
-                                    </td>
-                                    <td style={styles.td}>
-                                        <div style={styles.actionContainer}>
-                                            <Link 
-                                                to={`/edit/${product.id}`} 
-                                                style={{ ...styles.button, ...styles.editBtn }}
-                                            >
-                                                Modifier
-                                            </Link>
-                                            <button
-                                                onClick={() => handleDeleteClick(product)}
-                                                style={{ ...styles.button, ...styles.deleteBtn }}
-                                            >
-                                                Supprimer
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                <td colSpan="4" style={{ textAlign: 'center', padding: '20px' }}>
-                                    Aucun produit trouvé.
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
-            </div>
-
-            {/* Modal de confirmation de suppression */}
-            {showDeleteModal && (
-                <div style={styles.modalOverlay}>
-                    <div style={styles.modal}>
-                        <h3 style={styles.modalTitle}>Confirmation de suppression</h3>
-                        <p style={styles.modalMessage}>
-                            Êtes-vous sûr de supprimer le produit <strong>"{productToDelete?.name}"</strong> ?
-                        </p>
-                        <div style={styles.modalActions}>
-                            <button
-                                onClick={confirmDelete}
-                                disabled={isDeleting}
-                                style={{ ...styles.modalButton, ...styles.confirmButton }}
-                            >
-                                {isDeleting ? 'Suppression...' : 'Oui'}
-                            </button>
-                            <button
-                                onClick={cancelDelete}
-                                disabled={isDeleting}
-                                style={{ ...styles.modalButton, ...styles.cancelButton }}
-                            >
-                                Non
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-        </div>
-    );
-};
+const API_BASE_URL = 'https://backend-produit-7.onrender.com';
+const REQUEST_TIMEOUT = 5000; // 5 seconds
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000; // 1 second
 
 const styles = {
     container: {
@@ -416,6 +213,246 @@ const styles = {
         backgroundColor: '#757575',
         color: '#fff'
     }
+};
+
+const ProductList = ({ searchTerm }) => {
+    const [products, setProducts] = useState([]);
+    const [error, setError] = useState('');
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [productToDelete, setProductToDelete] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [retryCount, setRetryCount] = useState(0);
+
+    useEffect(() => {
+        fetchProducts();
+    }, []);
+
+    const fetchProducts = async (retryAttempt = 0) => {
+        setIsLoading(true);
+        setError('');
+        
+        try {
+            const response = await axios.get(`${API_BASE_URL}/products/`, {
+                timeout: REQUEST_TIMEOUT
+            });
+            
+            if (Array.isArray(response.data)) {
+                setProducts(response.data);
+            } else if (Array.isArray(response.data.products)) {
+                setProducts(response.data.products);
+            } else {
+                throw new Error("Format inattendu des données reçues.");
+            }
+            setRetryCount(0);
+        } catch (error) {
+            console.error("Erreur lors de la récupération des produits:", error);
+            
+            if (error.code === 'ECONNABORTED') {
+                setError("Le serveur met trop de temps à répondre.");
+            } else if (error.code === 'ERR_NETWORK') {
+                setError("Problème de connexion. Vérifiez votre réseau.");
+                
+                if (retryAttempt < MAX_RETRIES) {
+                    setTimeout(() => {
+                        setRetryCount(prev => prev + 1);
+                        fetchProducts(retryAttempt + 1);
+                    }, RETRY_DELAY * (retryAttempt + 1));
+                    return;
+                }
+            } else {
+                setError("Une erreur est survenue lors du chargement des produits.");
+            }
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleDeleteClick = (product) => {
+        setProductToDelete(product);
+        setShowDeleteModal(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!productToDelete) return;
+        
+        setIsDeleting(true);
+        try {
+            await axios.delete(`${API_BASE_URL}/products/${productToDelete.id}`, {
+                timeout: REQUEST_TIMEOUT
+            });
+            setProducts(prevProducts => 
+                prevProducts.filter(product => product.id !== productToDelete.id)
+            );
+            setShowDeleteModal(false);
+            setProductToDelete(null);
+        } catch (error) {
+            console.error("Erreur lors de la suppression du produit:", error);
+            setError(
+                error.code === 'ERR_NETWORK' 
+                    ? "Erreur réseau lors de la suppression. Veuillez réessayer."
+                    : "Échec de la suppression du produit."
+            );
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
+    const cancelDelete = () => {
+        setShowDeleteModal(false);
+        setProductToDelete(null);
+    };
+
+    const filteredProducts = Array.isArray(products)
+        ? products.filter(product =>
+            product.name?.toLowerCase().includes(searchTerm?.toLowerCase() || ''))
+        : [];
+
+    if (isLoading) {
+        return (
+            <div style={styles.container}>
+                <div style={styles.loadingContainer}>
+                    <div style={styles.spinner}></div>
+                    <p>Chargement des produits...{retryCount > 0 && ` (Essai ${retryCount}/${MAX_RETRIES})`}</p>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div style={styles.container}>
+            <h2 style={{ ...styles.title, color: '#000' }}>Liste des produits</h2>
+            {error && (
+                <p style={{ color: 'red', textAlign: 'center' }}>
+                    {error}
+                    <button 
+                        onClick={fetchProducts} 
+                        style={{ marginLeft: '10px', padding: '5px 10px' }}
+                    >
+                        Réessayer
+                    </button>
+                </p>
+            )}
+
+            {/* Version mobile - Cards */}
+            <div style={styles.mobileView}>
+                {filteredProducts.length > 0 ? (
+                    filteredProducts.map(product => (
+                        <div key={product.id} style={styles.productCard}>
+                            <div style={styles.cardHeader}>
+                                <h3 style={styles.productName}>{product.name}</h3>
+                                <span style={styles.productPrice}>
+                                    {product.price ? `${product.price.toFixed(0)} FCFA` : 'N/A'}
+                                </span>
+                            </div>
+                            <p style={styles.productDescription}>
+                                {product.description || 'Aucune description'}
+                            </p>
+                            <div style={styles.cardActions}>
+                                <Link 
+                                    to={`/edit/${product.id}`} 
+                                    style={{ ...styles.mobileButton, ...styles.editBtnMobile }}
+                                >
+                                    Modifier
+                                </Link>
+                                <button
+                                    onClick={() => handleDeleteClick(product)}
+                                    style={{ ...styles.mobileButton, ...styles.deleteBtnMobile }}
+                                >
+                                    Supprimer
+                                </button>
+                            </div>
+                        </div>
+                    ))
+                ) : (
+                    !error && (
+                        <div style={styles.noProducts}>
+                            <p>Aucun produit trouvé.</p>
+                        </div>
+                    )
+                )}
+            </div>
+
+            {/* Version desktop - Table */}
+            <div style={styles.desktopView}>
+                <table style={styles.table}>
+                    <thead>
+                        <tr>
+                            <th style={styles.th}>Nom</th>
+                            <th style={styles.th}>Description</th>
+                            <th style={styles.th}>Prix</th>
+                            <th style={styles.th}>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {filteredProducts.length > 0 ? (
+                            filteredProducts.map(product => (
+                                <tr key={product.id}>
+                                    <td style={styles.td}>{product.name}</td>
+                                    <td style={styles.td}>{product.description}</td>
+                                    <td style={styles.td}>
+                                        {product.price ? `${product.price.toFixed(0)} FCFA` : 'N/A'}
+                                    </td>
+                                    <td style={styles.td}>
+                                        <div style={styles.actionContainer}>
+                                            <Link 
+                                                to={`/edit/${product.id}`} 
+                                                style={{ ...styles.button, ...styles.editBtn }}
+                                            >
+                                                Modifier
+                                            </Link>
+                                            <button
+                                                onClick={() => handleDeleteClick(product)}
+                                                style={{ ...styles.button, ...styles.deleteBtn }}
+                                            >
+                                                Supprimer
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            !error && (
+                                <tr>
+                                    <td colSpan="4" style={{ textAlign: 'center', padding: '20px' }}>
+                                        Aucun produit trouvé.
+                                    </td>
+                                </tr>
+                            )
+                        )}
+                    </tbody>
+                </table>
+            </div>
+
+            {/* Modal de confirmation de suppression */}
+            {showDeleteModal && (
+                <div style={styles.modalOverlay}>
+                    <div style={styles.modal}>
+                        <h3 style={styles.modalTitle}>Confirmation de suppression</h3>
+                        <p style={styles.modalMessage}>
+                            Êtes-vous sûr de supprimer le produit <strong>"{productToDelete?.name}"</strong> ?
+                        </p>
+                        <div style={styles.modalActions}>
+                            <button
+                                onClick={confirmDelete}
+                                disabled={isDeleting}
+                                style={{ ...styles.modalButton, ...styles.confirmButton }}
+                            >
+                                {isDeleting ? 'Suppression...' : 'Oui'}
+                            </button>
+                            <button
+                                onClick={cancelDelete}
+                                disabled={isDeleting}
+                                style={{ ...styles.modalButton, ...styles.cancelButton }}
+                            >
+                                Non
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
 };
 
 export default ProductList;
