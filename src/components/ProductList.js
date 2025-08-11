@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { productAPI } from '../api/config';
 
-const API_BASE_URL = 'https://backend-produit-8.onrender.com';
+
+const API_BASE_URL = 'https://backend-produit-12.onrender.com';
 const REQUEST_TIMEOUT = 5000; // 5 seconds
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000; // 1 second
@@ -17,13 +19,17 @@ const styles = {
         minHeight: '100vh',
         maxWidth: '1200px',
         margin: '0 auto',
-        padding: '10px'
+        padding: '10px',
+        paddingTop: '5px', // Espace pour la navbar
     },
     title: {
-        fontSize: '24px',
-        marginBottom: '20px',
+        fontSize: '28px',
+        marginBottom: '30px',
         textAlign: 'center',
-        color: '#333'
+        color: '#2c3e50',
+        fontWeight: 'bold',
+        textShadow: '1px 1px 2px rgba(0,0,0,0.1)',
+        paddingTop: '5px', // Espace supplémentaire pour éviter la navbar
     },
     loadingContainer: {
         display: 'flex',
@@ -37,125 +43,162 @@ const styles = {
         width: '40px',
         height: '40px',
         border: '4px solid #f3f3f3',
-        borderTop: '4px solid #333',
+        borderTop: '4px solid #3498db',
         borderRadius: '50%',
         animation: 'spin 1s linear infinite',
         marginBottom: '20px'
     },
-    mobileView: {
-        display: 'block',
-        '@media (min-width: 768px)': {
-            display: 'none'
-        }
-    },
-    desktopView: {
-        display: 'none',
-        '@media (min-width: 768px)': {
-            display: 'block'
+    // Grille responsive pour les produits
+    productsGrid: {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+        gap: '20px',
+        padding: '0 10px',
+        '@media (maxWidth: 768px)': {
+            gridTemplateColumns: '1fr',
+            gap: '15px',
+            padding: '0 5px'
         }
     },
     productCard: {
-        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-        border: '1px solid #ddd',
-        borderRadius: '8px',
-        margin: '10px 0',
-        padding: '15px',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        border: '1px solid #e0e6ed',
+        borderRadius: '15px',
+        padding: '0',
+        boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
+        overflow: 'hidden',
+        transition: 'all 0.3s ease',
+        position: 'relative',
+        ':hover': {
+            transform: 'translateY(-5px)',
+            boxShadow: '0 8px 25px rgba(0,0,0,0.15)'
+        }
     },
-    cardHeader: {
+    productImageContainer: {
+        width: '100%',
+        height: '200px',
+        backgroundColor: '#f8f9fa',
         display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'flex-start',
-        marginBottom: '10px'
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderBottom: '1px solid #e0e6ed',
+        position: 'relative',
+        overflow: 'hidden'
+    },
+    productImage: {
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover',
+        transition: 'transform 0.3s ease'
+    },
+    placeholderImage: {
+        fontSize: '48px',
+        color: '#95a5a6',
+        textAlign: 'center'
+    },
+    productContent: {
+        padding: '20px'
+    },
+    productHeader: {
+        marginBottom: '15px'
     },
     productName: {
-        fontSize: '18px',
-        margin: '0',
-        color: '#333',
-        flex: 1,
-        paddingRight: '10px'
+        fontSize: '20px',
+        fontWeight: 'bold',
+        color: '#2c3e50',
+        margin: '0 0 8px 0',
+        lineHeight: '1.3'
     },
     productPrice: {
-        fontSize: '16px',
+        fontSize: '18px',
         fontWeight: 'bold',
-        color: '#4CAF50',
-        whiteSpace: 'nowrap'
+        color: '#27ae60',
+        margin: '0',
+        display: 'block'
     },
     productDescription: {
-        color: '#666',
-        margin: '10px 0',
+        color: '#7f8c8d',
         fontSize: '14px',
-        lineHeight: '1.4'
+        lineHeight: '1.5',
+        margin: '15px 0',
+        maxHeight: '60px',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis'
     },
     cardActions: {
         display: 'flex',
         gap: '10px',
-        marginTop: '15px'
+        marginTop: '20px',
+        justifyContent: 'flex-end'
     },
-    mobileButton: {
-        flex: 1,
-        padding: '10px 15px',
+    actionButton: {
+        padding: '10px 20px',
         border: 'none',
-        borderRadius: '5px',
+        borderRadius: '25px',
         cursor: 'pointer',
         textDecoration: 'none',
         textAlign: 'center',
         fontSize: '14px',
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        transition: 'all 0.3s ease',
+        minWidth: '100px',
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'relative',
+        overflow: 'hidden'
     },
-    editBtnMobile: {
-        backgroundColor: '#FFEB3B',
-        color: '#333'
+    editButton: {
+        backgroundColor: '#3498db',
+        color: '#fff',
+        boxShadow: '0 3px 10px rgba(52, 152, 219, 0.3)',
+        ':hover': {
+            backgroundColor: '#2980b9',
+            transform: 'translateY(-2px)',
+            boxShadow: '0 5px 15px rgba(52, 152, 219, 0.4)'
+        },
+        ':active': {
+            transform: 'translateY(0)',
+            boxShadow: '0 2px 8px rgba(52, 152, 219, 0.3)'
+        }
     },
-    deleteBtnMobile: {
-        backgroundColor: '#f44336',
-        color: '#fff'
+    deleteButton: {
+        backgroundColor: '#e74c3c',
+        color: '#fff',
+        boxShadow: '0 3px 10px rgba(231, 76, 60, 0.3)',
+        ':hover': {
+            backgroundColor: '#c0392b',
+            transform: 'translateY(-2px)',
+            boxShadow: '0 5px 15px rgba(231, 76, 60, 0.4)'
+        },
+        ':active': {
+            transform: 'translateY(0)',
+            boxShadow: '0 2px 8px rgba(231, 76, 60, 0.3)'
+        }
+    },
+    // Version responsive pour mobile
+    '@media (maxWidth: 768px)': {
+        cardActions: {
+            flexDirection: 'column',
+            gap: '8px'
+        },
+        actionButton: {
+            width: '100%',
+            padding: '12px 20px',
+            fontSize: '16px'
+        },
+        editButton: {
+            width: '100%'
+        }
     },
     noProducts: {
         textAlign: 'center',
-        padding: '40px',
-        color: '#666'
-    },
-    table: {
-        width: '100%',
-        borderCollapse: 'collapse',
-        marginTop: '20px',
+        padding: '60px 20px',
+        color: '#7f8c8d',
+        fontSize: '18px',
         backgroundColor: 'rgba(255, 255, 255, 0.9)',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-    },
-    th: {
-        background: '#333',
-        color: '#fff',
-        padding: '12px',
-        textAlign: 'left',
-        fontSize: '16px'
-    },
-    td: {
-        border: '1px solid #ddd',
-        padding: '12px',
-        fontSize: '14px'
-    },
-    actionContainer: {
-        display: 'flex',
-        gap: '10px',
-        alignItems: 'center'
-    },
-    button: {
-        padding: '6px 12px',
-        border: 'none',
-        borderRadius: '4px',
-        cursor: 'pointer',
-        textDecoration: 'none',
-        fontSize: '12px',
-        fontWeight: 'bold'
-    },
-    editBtn: {
-        background: '#FFEB3B',
-        color: '#333'
-    },
-    deleteBtn: {
-        background: '#f44336',
-        color: '#fff'
+        borderRadius: '15px',
+        margin: '20px 0'
     },
     modalOverlay: {
         position: 'fixed',
@@ -163,33 +206,36 @@ const styles = {
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: 'rgba(0,0,0,0.5)',
+        backgroundColor: 'rgba(0,0,0,0.6)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         zIndex: 1000,
-        padding: '20px'
+        padding: '20px',
+        backdropFilter: 'blur(5px)'
     },
     modal: {
         backgroundColor: '#fff',
-        padding: '25px',
-        borderRadius: '8px',
+        padding: '30px',
+        borderRadius: '20px',
         maxWidth: '400px',
         width: '100%',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
+        boxShadow: '0 10px 40px rgba(0,0,0,0.3)',
+        animation: 'modalSlideIn 0.3s ease'
     },
     modalTitle: {
-        margin: '0 0 15px 0',
-        color: '#333',
-        fontSize: '20px',
-        textAlign: 'center'
+        margin: '0 0 20px 0',
+        color: '#2c3e50',
+        fontSize: '22px',
+        textAlign: 'center',
+        fontWeight: 'bold'
     },
     modalMessage: {
-        margin: '0 0 25px 0',
-        color: '#666',
+        margin: '0 0 30px 0',
+        color: '#7f8c8d',
         fontSize: '16px',
         textAlign: 'center',
-        lineHeight: '1.4'
+        lineHeight: '1.5'
     },
     modalActions: {
         display: 'flex',
@@ -197,23 +243,159 @@ const styles = {
         justifyContent: 'center'
     },
     modalButton: {
-        padding: '10px 25px',
+        padding: '12px 30px',
         border: 'none',
-        borderRadius: '5px',
+        borderRadius: '25px',
         cursor: 'pointer',
         fontSize: '16px',
         fontWeight: 'bold',
-        minWidth: '80px'
+        minWidth: '100px',
+        transition: 'all 0.3s ease'
     },
     confirmButton: {
-        backgroundColor: '#f44336',
-        color: '#fff'
+        backgroundColor: '#e74c3c',
+        color: '#fff',
+        ':hover': {
+            backgroundColor: '#c0392b',
+            transform: 'translateY(-2px)'
+        }
     },
     cancelButton: {
-        backgroundColor: '#757575',
-        color: '#fff'
+        backgroundColor: '#95a5a6',
+        color: '#fff',
+        ':hover': {
+            backgroundColor: '#7f8c8d',
+            transform: 'translateY(-2px)'
+        }
+    },
+    retryButton: {
+        marginLeft: '15px',
+        padding: '8px 16px',
+        backgroundColor: '#3498db',
+        color: '#fff',
+        border: 'none',
+        borderRadius: '20px',
+        cursor: 'pointer',
+        fontSize: '14px',
+        fontWeight: 'bold',
+        transition: 'all 0.3s ease',
+        ':hover': {
+            backgroundColor: '#2980b9',
+            transform: 'translateY(-1px)'
+        }
+    },
+    errorMessage: {
+        color: '#e74c3c',
+        textAlign: 'center',
+        backgroundColor: 'rgba(231, 76, 60, 0.1)',
+        padding: '15px',
+        borderRadius: '10px',
+        margin: '20px 0',
+        border: '1px solid rgba(231, 76, 60, 0.2)'
     }
 };
+
+// Ajout des animations CSS
+const cssAnimations = `
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.product-card:hover .product-image {
+    transform: scale(1.05);
+}
+
+.action-button {
+    position: relative;
+    overflow: hidden;
+}
+
+.action-button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255,255,255,0.3);
+    border-radius: 50%;
+    transition: width 0.3s, height 0.3s;
+    transform: translate(-50%, -50%);
+}
+
+.action-button:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+// Version responsive pour mobile
+'@media (maxWidth: 768px)': {
+    cardActions: {
+        flexDirection: 'column',
+        gap: '8px'
+    },
+    actionButton: {
+        width: '100% !important',  // Force la largeur à 100% pour tous les boutons
+        padding: '12px 20px',
+        fontSize: '16px',
+        display: 'block' // Ajout de cette ligne pour s'assurer du comportement en bloc
+    },
+    editButton: {
+        width: '100% !important', // Double assurance pour le bouton Modifier
+        margin: '0 !important'    // Supprime les marges potentielles
+    },
+    deleteButton: {
+        width: '100% !important'  // Double assurance pour le bouton Supprimer
+    }
+}
+
+    '@media (maxWidth: 768px)': {
+        outerContainer: {
+            padding: '10px',
+        },
+        formContainer: {
+            padding: '20px',
+        },
+        title: {
+            fontSize: '24px',
+        },
+        buttonGroup: {
+            flexDirection: 'column',
+        },
+        button: {
+            width: '100%',
+        },
+        imagePreview: {
+            height: '200px',
+        },
+        imageOverlay: {
+            flexDirection: 'column',
+            gap: '10px',
+        },
+        uploadPlaceholder: {
+            padding: '30px 15px',
+        }
+    },
+      
+}
+`;
 
 const ProductList = ({ searchTerm }) => {
     const [products, setProducts] = useState([]);
@@ -225,7 +407,18 @@ const ProductList = ({ searchTerm }) => {
     const [retryCount, setRetryCount] = useState(0);
 
     useEffect(() => {
+        // Injecter les styles CSS
+        const styleSheet = document.createElement("style");
+        styleSheet.type = "text/css";
+        styleSheet.innerText = cssAnimations;
+        document.head.appendChild(styleSheet);
+
         fetchProducts();
+
+        return () => {
+            // Nettoyer les styles injectés
+            document.head.removeChild(styleSheet);
+        };
     }, []);
 
     const fetchProducts = async (retryAttempt = 0) => {
@@ -321,131 +514,113 @@ const ProductList = ({ searchTerm }) => {
 
     return (
         <div style={styles.container}>
-            <h2 style={{ ...styles.title, color: '#000' }}>Liste des produits</h2>
+            <h2 style={styles.title}>Liste des produits</h2>
+            
             {error && (
-                <p style={{ color: 'red', textAlign: 'center' }}>
+                <div style={styles.errorMessage}>
                     {error}
                     <button 
-                        onClick={fetchProducts} 
-                        style={{ marginLeft: '10px', padding: '5px 10px' }}
+                        onClick={() => fetchProducts()} 
+                        style={styles.retryButton}
+                        className="action-button"
                     >
                         Réessayer
                     </button>
-                </p>
+                </div>
             )}
 
-            {/* Version mobile - Cards */}
-            <div style={styles.mobileView}>
+            {/* Grille de produits responsive */}
+            <div style={styles.productsGrid} className="products-grid">
                 {filteredProducts.length > 0 ? (
                     filteredProducts.map(product => (
-                        <div key={product.id} style={styles.productCard}>
-                            <div style={styles.cardHeader}>
-                                <h3 style={styles.productName}>{product.name}</h3>
-                                <span style={styles.productPrice}>
-                                    {product.price ? `${product.price.toFixed(0)} FCFA` : 'N/A'}
-                                </span>
+                        <div key={product.id} style={styles.productCard} className="product-card">
+                            {/* Section photo du produit */}
+                            <div style={styles.productImageContainer}>
+                                {product.image ? (
+                                    <img 
+                                        src={product.image} 
+                                        alt={product.name}
+                                        style={styles.productImage}
+                                        className="product-image"
+                                        onError={(e) => {
+                                            e.target.style.display = 'none';
+                                            e.target.nextSibling.style.display = 'flex';
+                                        }}
+                                    />
+                                ) : null}
+                                <div style={styles.placeholderImage}>
+                                    📷
+                                </div>
                             </div>
-                            <p style={styles.productDescription}>
-                                {product.description || 'Aucune description'}
-                            </p>
-                            <div style={styles.cardActions}>
-                                <Link 
-                                    to={`/edit/${product.id}`} 
-                                    style={{ ...styles.mobileButton, ...styles.editBtnMobile }}
-                                >
-                                    Modifier
-                                </Link>
-                                <button
-                                    onClick={() => handleDeleteClick(product)}
-                                    style={{ ...styles.mobileButton, ...styles.deleteBtnMobile }}
-                                >
-                                    Supprimer
-                                </button>
+
+                            {/* Contenu du produit */}
+                            <div style={styles.productContent}>
+                                <div style={styles.productHeader}>
+                                    <h3 style={styles.productName}>{product.name}</h3>
+                                    <span style={styles.productPrice}>
+                                        {product.price ? `${product.price.toFixed(0)} FCFA` : 'Prix non défini'}
+                                    </span>
+                                </div>
+                                
+                                <p style={styles.productDescription}>
+                                    {product.description || 'Aucune description disponible'}
+                                </p>
+
+                                {/* Actions */}
+                                <div style={styles.cardActions} className="card-actions">
+                                    <Link 
+                                        to={`/edit/${product.id}`} 
+                                        style={{...styles.actionButton, ...styles.editButton}}
+                                        className="action-button"
+                                    >
+                                        ✏️ Modifier
+                                    </Link>
+                                    <button
+                                        onClick={() => handleDeleteClick(product)}
+                                        style={{...styles.actionButton, ...styles.deleteButton}}
+                                        className="action-button"
+                                    >
+                                        🗑️ Supprimer
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     ))
                 ) : (
                     !error && (
                         <div style={styles.noProducts}>
-                            <p>Aucun produit trouvé.</p>
+                            <p>😕 Aucun produit trouvé.</p>
+                            <p>Commencez par ajouter votre premier produit !</p>
                         </div>
                     )
                 )}
-            </div>
-
-            {/* Version desktop - Table */}
-            <div style={styles.desktopView}>
-                <table style={styles.table}>
-                    <thead>
-                        <tr>
-                            <th style={styles.th}>Nom</th>
-                            <th style={styles.th}>Description</th>
-                            <th style={styles.th}>Prix</th>
-                            <th style={styles.th}>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {filteredProducts.length > 0 ? (
-                            filteredProducts.map(product => (
-                                <tr key={product.id}>
-                                    <td style={styles.td}>{product.name}</td>
-                                    <td style={styles.td}>{product.description}</td>
-                                    <td style={styles.td}>
-                                        {product.price ? `${product.price.toFixed(0)} FCFA` : 'N/A'}
-                                    </td>
-                                    <td style={styles.td}>
-                                        <div style={styles.actionContainer}>
-                                            <Link 
-                                                to={`/edit/${product.id}`} 
-                                                style={{ ...styles.button, ...styles.editBtn }}
-                                            >
-                                                Modifier
-                                            </Link>
-                                            <button
-                                                onClick={() => handleDeleteClick(product)}
-                                                style={{ ...styles.button, ...styles.deleteBtn }}
-                                            >
-                                                Supprimer
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))
-                        ) : (
-                            !error && (
-                                <tr>
-                                    <td colSpan="4" style={{ textAlign: 'center', padding: '20px' }}>
-                                        Aucun produit trouvé.
-                                    </td>
-                                </tr>
-                            )
-                        )}
-                    </tbody>
-                </table>
             </div>
 
             {/* Modal de confirmation de suppression */}
             {showDeleteModal && (
                 <div style={styles.modalOverlay}>
                     <div style={styles.modal}>
-                        <h3 style={styles.modalTitle}>Confirmation de suppression</h3>
+                        <h3 style={styles.modalTitle}>⚠️ Confirmation de suppression</h3>
                         <p style={styles.modalMessage}>
-                            Êtes-vous sûr de supprimer le produit <strong>"{productToDelete?.name}"</strong> ?
+                            Êtes-vous sûr de vouloir supprimer le produit <strong>"{productToDelete?.name}"</strong> ?
+                            <br />Cette action est irréversible.
                         </p>
                         <div style={styles.modalActions}>
                             <button
                                 onClick={confirmDelete}
                                 disabled={isDeleting}
-                                style={{ ...styles.modalButton, ...styles.confirmButton }}
+                                style={{...styles.modalButton, ...styles.confirmButton}}
+                                className="action-button"
                             >
-                                {isDeleting ? 'Suppression...' : 'Oui'}
+                                {isDeleting ? '⏳ Suppression...' : '✅ Oui, supprimer'}
                             </button>
                             <button
                                 onClick={cancelDelete}
                                 disabled={isDeleting}
-                                style={{ ...styles.modalButton, ...styles.cancelButton }}
+                                style={{...styles.modalButton, ...styles.cancelButton}}
+                                className="action-button"
                             >
-                                Non
+                                ❌ Annuler
                             </button>
                         </div>
                     </div>

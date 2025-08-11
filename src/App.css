@@ -1,268 +1,589 @@
-.button {
-  transition: all 0.3s ease;
+/* Reset et base styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-.button:hover {
-  transform: scale(1.05);
-  opacity: 0.9;
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
 }
 
-/* App.css */
+/* Variables CSS pour la cohérence */
+:root {
+  --primary-color: #3498db;
+  --success-color: #27ae60;
+  --danger-color: #e74c3c;
+  --warning-color: #f39c12;
+  --dark-color: #2c3e50;
+  --light-color: #ecf0f1;
+  --border-color: #e0e6ed;
+  --shadow: 0 4px 15px rgba(0,0,0,0.1);
+  --shadow-hover: 0 6px 20px rgba(0,0,0,0.15);
+  --border-radius: 12px;
+  --transition: all 0.3s ease;
+}
 
-/* Styles pour tous les écrans */
+/* Navigation responsive */
 .navbar {
-  background-color: #333;
-  padding: 15px 30px;
-  color: #fff;
   position: fixed;
   top: 0;
-  width: 100%;
+  left: 0;
+  right: 0;
   z-index: 1000;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  box-shadow: var(--shadow);
+  border-bottom: 1px solid var(--border-color);
 }
 
-.titleMobile {
-  margin: 0;
-  font-size: 18px;
-  color: #FFFFFF;
+/* Desktop Navigation */
+.desktop-nav {
+  display: none;
 }
 
-.menuToggle {
-  background-color: transparent;
-  border: none;
-  color: #fff;
-  font-size: 24px;
-  cursor: pointer;
-}
-
-/* Styles pour les écrans de bureau */
-@media (min-width: 768px) {
-  .navbarInner {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
+@media (min-width: 769px) {
+  .desktop-nav {
+    display: block !important;
   }
-
-  .mobileHeader, .mobileMenu {
-      display: none;
-  }
-
-  .navbarLeft {
-      order: 1;
-  }
-
-  .navbarCenter {
-      order: 2;
-      flex-grow: 1;
-      text-align: center;
-  }
-
-  .titleDesktop {
-      margin: 0;
-      color: #FFFFFF;
-      font-size: 24px;
-  }
-
-  .navbarRight {
-      order: 3;
+  .mobile-nav {
+    display: none !important;
   }
 }
 
-/* Styles pour les téléphones mobiles */
-@media (max-width: 767px) {
-  .navbarInner {
-      display: none;
-  }
-
-  .navbar {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-  }
-
-  .mobileHeader {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
-  }
-
-  .mobileMenu {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      gap: 10px;
-      padding-top: 15px;
-      align-items: stretch;
-  }
-
-  .buttonMobile, .searchMobile {
-      width: 100%;
-      box-sizing: border-box;
-      padding: 10px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-  }
-
-  .buttonMobile {
-      background: #4CAF50;
-      color: #fff;
-      text-decoration: none;
-      text-align: center;
-  }
+.navbar-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 30px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-/* Animations et transitions */
-.button, .buttonMobile, .button.edit-btn, .button.delete-btn {
-  transition: transform 0.9s ease, background-color 0.9s ease;
+.nav-left {
+  flex: 0 0 auto;
 }
 
-.button:hover, .buttonMobile:hover, .button.edit-btn:hover, .button.delete-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.nav-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  margin: 0 20px;
 }
 
-.button {
-  background: #4CAF50;
-  color: #fff;
-  padding: 10px 20px;
+.nav-right {
+  flex: 0 0 auto;
+}
+
+/* Bouton Ajouter un produit */
+.add-button {
+  background: linear-gradient(135deg, var(--success-color), #219a52);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 25px;
   text-decoration: none;
-  border-radius: 4px;
+  font-weight: bold;
+  font-size: 14px;
+  box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+  transition: var(--transition);
   white-space: nowrap;
   border: none;
   cursor: pointer;
 }
 
-.search {
-  padding: 8px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  max-width: 300px;
+.add-button:hover {
+  background: linear-gradient(135deg, #219a52, #1e8449);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+  text-decoration: none;
+  color: white;
 }
-.search:focus {
+
+.add-button:active {
+  transform: translateY(0);
+}
+
+/* Titre de l'application */
+.title-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.app-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--dark-color);
+  text-align: center;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.app-title:hover {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+/* Barre de recherche */
+.search-container {
+  position: relative;
+}
+
+.search-input {
+  padding: 12px 20px;
+  border-radius: 25px;
+  border: 2px solid var(--border-color);
+  font-size: 14px;
+  width: 250px;
+  transition: var(--transition);
+  background-color: white;
+}
+
+.search-input:focus {
   outline: none;
-  border-color: #4CAF50;
-  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.5);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+  width: 280px;
 }
 
-/* Boutons de la liste des produits */
-.edit-btn {
-  background: #FFEB3B;
-  color: #333;
-}
-.delete-btn {
-  background: #f44336;
-  color: #fff;
-}
-.edit-btn:hover {
-  background-color: #ffc107;
-}
-.delete-btn:hover {
-  background-color: #d32f2f;
+.search-input::placeholder {
+  color: #7f8c8d;
 }
 
-/* Modal de suppression */
-.modal-button {
-  transition: background-color 0.9s ease, transform 0.9s ease;
-}
-.modal-button:hover {
-  transform: scale(1.05);
+/* Mobile Navigation */
+.mobile-nav {
+  display: block;
 }
 
+@media (min-width: 769px) {
+  .mobile-nav {
+    display: none !important;
+  }
+}
 
-/*
-  Styles de base et animations avancées pour tous les boutons de l'application.
-  Collez ce code dans votre fichier 'index.css'.
-*/
+.mobile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 20px;
+}
 
-/* Styles pour tous les boutons */
-.button {
-  /* Propriétés de base */
-  padding: 12px 24px;
+.title-link-mobile {
+  text-decoration: none;
+  color: inherit;
+  flex: 1;
+}
+
+.app-title-mobile {
+  margin: 0;
   font-size: 18px;
   font-weight: bold;
-  color: #fff;
+  color: var(--dark-color);
+}
+
+/* Menu hamburger */
+.menu-toggle {
+  background-color: transparent;
   border: none;
-  border-radius: 8px;
   cursor: pointer;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 30px;
+  height: 30px;
+  border-radius: 4px;
+  transition: var(--transition);
+}
+
+.menu-toggle:hover {
+  background-color: rgba(52, 152, 219, 0.1);
+}
+
+.hamburger-line {
+  width: 25px;
+  height: 3px;
+  background-color: var(--dark-color);
+  border-radius: 3px;
+  transition: var(--transition);
+  transform-origin: center;
+}
+
+/* Menu mobile déroulant */
+.mobile-menu {
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: white;
+  border-top: 1px solid var(--border-color);
+  max-height: 0;
+  opacity: 0;
+}
+
+.mobile-menu.open {
+  max-height: 300px;
+  opacity: 1;
+}
+
+.mobile-menu-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.add-button-mobile {
+  background: linear-gradient(135deg, var(--success-color), #219a52);
+  color: white;
+  padding: 15px 20px;
+  border-radius: var(--border-radius);
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 16px;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+  transition: var(--transition);
+  border: none;
+  cursor: pointer;
+}
+
+.add-button-mobile:hover {
+  background: linear-gradient(135deg, #219a52, #1e8449);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+  text-decoration: none;
+  color: white;
+}
+
+.search-input-mobile {
+  padding: 15px 20px;
+  border-radius: var(--border-radius);
+  border: 2px solid var(--border-color);
+  font-size: 16px;
+  width: 100%;
+  box-sizing: border-box;
+  transition: var(--transition);
+  background-color: #f8f9fa;
+}
+
+.search-input-mobile:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+  background-color: white;
+}
+
+.search-input-mobile::placeholder {
+  color: #7f8c8d;
+}
+
+/* Overlay pour fermer le menu mobile */
+.mobile-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: -1;
+}
+
+/* Contenu principal */
+.main-content {
+  padding-top: 80px;
+  min-height: 100vh;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 480px) {
+  .app-title-mobile {
+    font-size: 16px !important;
+  }
   
-  /* Couleur de fond par défaut (peut être surchargée) */
-  background-color: #4CAF50;
+  .mobile-header {
+    padding: 12px 15px !important;
+  }
   
-  /* Propriété de transition pour des animations fluides */
-  transition: background-color 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease;
+  .mobile-menu-content {
+    padding: 15px !important;
+    gap: 12px !important;
+  }
+  
+  .add-button-mobile {
+    padding: 12px 16px !important;
+    font-size: 14px !important;
+  }
+  
+  .search-input-mobile {
+    padding: 12px 16px !important;
+    font-size: 14px !important;
+  }
+  
+  .main-content {
+    padding-top: 70px;
+  }
 }
 
-/* Effet au survol de la souris */
-.button:hover {
-  /* Changement de couleur de fond plus visible */
-  background-color: #45a049;
-  /* Crée un effet de "pop" */
-  transform: scale(1.05); 
-  /* Ombre plus prononcée */
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); 
+@media (max-width: 320px) {
+  .app-title-mobile {
+    font-size: 14px !important;
+  }
+  
+  .mobile-header {
+    padding: 10px 12px !important;
+  }
+  
+  .main-content {
+    padding-top: 65px;
+  }
 }
 
-/* Effet au clic du bouton */
-.button:active {
-  /* Crée un effet d'enfoncement */
-  transform: scale(0.98); 
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+/* Tablettes */
+@media (min-width: 481px) and (max-width: 768px) {
+  .mobile-header {
+    padding: 16px 25px;
+  }
+  
+  .app-title-mobile {
+    font-size: 20px;
+  }
+  
+  .mobile-menu-content {
+    padding: 25px;
+    gap: 18px;
+  }
+  
+  .add-button-mobile {
+    padding: 16px 22px;
+    font-size: 17px;
+  }
+  
+  .search-input-mobile {
+    padding: 16px 22px;
+    font-size: 17px;
+  }
 }
 
-/* Styles pour le bouton Annuler */
-.cancel-button {
-  background-color: #888;
+/* Desktop large */
+@media (min-width: 1200px) {
+  .navbar-content {
+    padding: 20px 40px;
+  }
+  
+  .app-title {
+    font-size: 26px;
+  }
+  
+  .search-input {
+    width: 300px;
+  }
+  
+  .search-input:focus {
+    width: 350px;
+  }
+  
+  .add-button {
+    padding: 14px 28px;
+    font-size: 15px;
+  }
 }
 
-/* Effet de survol pour le bouton Annuler */
-.cancel-button:hover {
-  background-color: #666;
-  transform: scale(1.05);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+/* Animations */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* ------------------ Styles spécifiques pour les boutons Modifier et Supprimer ------------------ */
-
-/* Bouton Modifier */
-.edit-btn {
-  background-color: #FFEB3B; /* Jaune */
-  color: #333;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
-/* Effet de survol pour le bouton Modifier */
-.edit-btn:hover {
-  background-color: #ffc107; /* Jaune plus foncé */
-  transform: scale(1.05);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+.mobile-menu.open {
+  animation: slideDown 0.3s ease;
 }
 
-/* Effet au clic du bouton Modifier */
-.edit-btn:active {
-  transform: scale(0.98);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.mobile-overlay {
+  animation: fadeIn 0.3s ease;
 }
 
-/* Bouton Supprimer */
-.delete-btn {
-  background-color: #f44336; /* Rouge */
-  color: #fff;
+/* États des boutons */
+.add-button:disabled,
+.add-button-mobile:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
 }
 
-/* Effet de survol pour le bouton Supprimer */
-.delete-btn:hover {
-  background-color: #d32f2f; /* Rouge plus foncé */
-  transform: scale(1.05);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+.add-button:disabled:hover,
+.add-button-mobile:disabled:hover {
+  transform: none !important;
+  box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3) !important;
 }
 
-/* Effet au clic du bouton Supprimer */
-.delete-btn:active {
-  transform: scale(0.98);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+/* Focus visible pour l'accessibilité */
+.add-button:focus-visible,
+.add-button-mobile:focus-visible,
+.search-input:focus-visible,
+.search-input-mobile:focus-visible,
+.menu-toggle:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
 }
 
+/* Amélioration de l'accessibilité */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
 
+/* Mode sombre */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --dark-color: #ecf0f1;
+    --light-color: #2c3e50;
+    --border-color: #7f8c8d;
+  }
+  
+  body {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  }
+  
+  .navbar {
+    background-color: rgba(44, 62, 80, 0.95) !important;
+    color: white !important;
+    border-bottom-color: #7f8c8d !important;
+  }
+  
+  .app-title,
+  .app-title-mobile {
+    color: var(--dark-color) !important;
+  }
+  
+  .search-input,
+  .search-input-mobile {
+    background-color: #34495e !important;
+    color: var(--dark-color) !important;
+    border-color: var(--border-color) !important;
+  }
+  
+  .search-input::placeholder,
+  .search-input-mobile::placeholder {
+    color: #bdc3c7 !important;
+  }
+  
+  .hamburger-line {
+    background-color: var(--dark-color) !important;
+  }
+  
+  .mobile-menu {
+    background-color: #34495e !important;
+  }
+  
+  .search-input-mobile {
+    background-color: #2c3e50 !important;
+  }
+}
 
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .add-button,
+  .add-button-mobile {
+    border: 2px solid currentColor;
+  }
+  
+  .search-input,
+  .search-input-mobile {
+    border-width: 3px;
+  }
+  
+  .navbar {
+    border-bottom-width: 3px;
+  }
+}
+
+/* Impression */
+@media print {
+  .navbar {
+    display: none !important;
+  }
+  
+  .main-content {
+    padding-top: 0 !important;
+  }
+  
+  * {
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+  }
+}
+
+/* Styles pour les anciennes versions d'iOS */
+@supports (-webkit-appearance: none) {
+  .search-input,
+  .search-input-mobile {
+    -webkit-appearance: none;
+    border-radius: var(--border-radius);
+  }
+  
+  .add-button,
+  .add-button-mobile {
+    -webkit-appearance: none;
+    border-radius: 25px;
+  }
+}
+
+/* Optimisation pour les écrans haute résolution */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .hamburger-line {
+    height: 2px;
+  }
+}
+
+/* Styles pour les navigateurs plus anciens */
+.navbar {
+  background-color: rgba(255, 255, 255, 0.95);
+  background-color: white\9; /* IE8 fallback */
+}
+
+/* Fallback pour flexbox */
+.navbar-content {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+}
+
+/* Sélection de texte personnalisée */
+::selection {
+  background-color: rgba(52, 152, 219, 0.3);
+  color: var(--dark-color);
+}
+
+::-moz-selection {
+  background-color: rgba(52, 152, 219, 0.3);
+  color: var(--dark-color);
+}
