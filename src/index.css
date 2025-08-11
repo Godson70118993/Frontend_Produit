@@ -176,3 +176,22 @@ body {
     overflow-x: auto;
   }
 }
+
+
+.desktop-nav {
+    display: none;
+}
+
+.mobile-nav {
+    display: block;
+}
+
+@media (min-width: 769px) {
+    .desktop-nav {
+        display: block !important;
+    }
+    .mobile-nav {
+        display: none !important;
+    }
+}
+

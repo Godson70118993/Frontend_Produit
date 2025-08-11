@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { productAPI } from '../api/config';
 
 const EditProduct = () => {
     const { id } = useParams();
@@ -16,76 +17,67 @@ const EditProduct = () => {
     const fileInputRef = useRef(null);
     const navigate = useNavigate();
 
-    // URL de base de l'API
+    const handleCancel = () => {
+        navigate('/');
+    };
+
     const API_BASE_URL = 'https://backend-produit-12.onrender.com';
 
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                setServerStatus('Chargement des données...');
+                setIsLoading(true);
                 const response = await fetch(`${API_BASE_URL}/products/${id}`);
-                
-                if (!response.ok) {
-                    throw new Error(`Erreur HTTP ${response.status}`);
-                }
+                if (!response.ok) throw new Error('Produit non trouvé');
                 
                 const productData = await response.json();
-                const { name, description, price, image } = productData;
+                setName(productData.name);
+                setDescription(productData.description || '');
+                setPrice(productData.price.toString());
                 
-                setName(name || '');
-                setDescription(description || '');
-                setPrice(price?.toString() || '');
-                setCurrentImage(image || null);
-                setImagePreview(image || null);
-                setServerStatus('');
+                if (productData.image) {
+                    setCurrentImage(`${API_BASE_URL}${productData.image}`);
+                    setImagePreview(`${API_BASE_URL}${productData.image}`);
+                }
             } catch (error) {
-                console.error("Erreur lors de la récupération du produit:", error);
-                setError('Erreur lors du chargement des données du produit.');
-                setServerStatus('');
+                console.error("Erreur:", error);
+                setError('Erreur lors du chargement');
             } finally {
                 setIsLoading(false);
             }
         };
 
-        if (id) {
-            fetchProduct();
-        }
+        if (id) fetchProduct();
     }, [id]);
 
-    // Gestion de l'upload d'une nouvelle image
     const handleImageUpload = (event) => {
         const file = event.target.files[0];
-        if (file) {
-            // Vérification du type de fichier
-            if (!file.type.startsWith('image/')) {
-                setError('Veuillez sélectionner un fichier image valide.');
-                return;
-            }
-            
-            // Vérification de la taille (max 5MB)
-            if (file.size > 5 * 1024 * 1024) {
-                setError('La taille de l\'image ne doit pas dépasser 5MB.');
-                return;
-            }
+        if (!file) return;
 
-            setNewImage(file);
-            setError('');
-            
-            // Créer un aperçu de la nouvelle image
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImagePreview(reader.result);
-            };
-            reader.readAsDataURL(file);
+        if (!file.type.match('image/(jpeg|png|gif|jpg)')) {
+            setError('Seuls les formats JPG, PNG et GIF sont acceptés');
+            return;
         }
+
+        if (file.size > 5 * 1024 * 1024) {
+            setError('La taille de l\'image ne doit pas dépasser 5MB');
+            return;
+        }
+
+        setNewImage(file);
+        setError('');
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            setImagePreview(e.target.result);
+        };
+        reader.readAsDataURL(file);
     };
 
-    // Déclencher la sélection de fichier
     const triggerFileInput = () => {
         fileInputRef.current?.click();
     };
 
-    // Supprimer l'image (revenir à l'image originale ou aucune image)
     const removeImage = () => {
         setNewImage(null);
         setImagePreview(currentImage);
@@ -94,7 +86,6 @@ const EditProduct = () => {
         }
     };
 
-    // Supprimer définitivement l'image du produit
     const removeCurrentImage = () => {
         setCurrentImage(null);
         setNewImage(null);
@@ -109,88 +100,51 @@ const EditProduct = () => {
         
         if (isSubmitting) return;
 
-        // Validation
-        if (!name.trim()) {
-            setError('Le nom du produit est obligatoire.');
-            return;
-        }
-
-        if (!price || isNaN(parseFloat(price)) || parseFloat(price) < 0) {
-            setError('Veuillez entrer un prix valide.');
-            return;
-        }
-
         setIsSubmitting(true);
         setError('');
         setServerStatus('Mise à jour en cours...');
 
         try {
-            // ✅ CORRECTION : Utiliser FormData pour la mise à jour avec image
             const formData = new FormData();
             formData.append('name', name.trim());
             formData.append('description', description.trim());
             formData.append('price', parseFloat(price));
             
-            // Si une nouvelle image a été sélectionnée
             if (newImage) {
-                formData.append('image', newImage);
-            }
-            // Si l'utilisateur a supprimé l'image actuelle
-            else if (!imagePreview && currentImage) {
+                formData.append('image', newImage, newImage.name);
+            } else if (!imagePreview) {
                 formData.append('removeImage', 'true');
             }
 
             const response = await fetch(`${API_BASE_URL}/products/${id}`, {
                 method: 'PUT',
-                body: formData, // Ne pas définir Content-Type, le navigateur le fait automatiquement
+                body: formData,
             });
 
             if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.detail || `Erreur HTTP ${response.status}`);
+                const errorData = await response.json();
+                throw new Error(errorData.detail || 'Erreur lors de la mise à jour');
             }
 
-            const result = await response.json();
-            setServerStatus('Produit mis à jour avec succès !');
-            console.log('Produit mis à jour:', result);
-            
-            // Redirection après succès
-            setTimeout(() => {
-                navigate('/');
-            }, 1000);
+            setServerStatus('Produit mis à jour !');
+            setTimeout(() => navigate('/'), 1500);
             
         } catch (error) {
-            console.error("Erreur lors de la mise à jour du produit:", error);
-            
-            // Gestion spécifique des erreurs
-            if (error.name === 'TypeError') {
-                setError('🌐 Erreur réseau: Impossible de contacter le serveur.');
-            } else if (error.message.includes('413')) {
-                setError('📸 Image trop volumineuse: Réduisez la taille de votre image.');
-            } else if (error.message.includes('400')) {
-                setError(`❌ Données invalides: ${error.message}`);
-            } else {
-                setError(`❌ Erreur: ${error.message || 'Une erreur inattendue est survenue.'}`);
-            }
-            
+            console.error("Erreur:", error);
+            setError(error.message || 'Erreur lors de la mise à jour');
             setServerStatus('');
         } finally {
             setIsSubmitting(false);
         }
     };
-    
-    const handleCancel = () => {
-        navigate('/');
-    };
 
     if (isLoading) {
-        return (
-            <div style={styles.loadingContainer}>
-                <div style={styles.spinner}></div>
-                <p>⏳ Chargement des données du produit...</p>
-            </div>
-        );
+        return <div>Chargement...</div>;
     }
+    if (!id) {
+        return <div>Produit non trouvé</div>;
+    }
+
 
     return (
         <div style={styles.outerContainer} className="outer-container">

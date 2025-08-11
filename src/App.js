@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import ProductList from './components/ProductList';
 import AddProduct from './components/AddProduct';
 import EditProduct from './components/EditProduct';
+import './index.css'; // Import CSS for global styles
 
 
 function App() {

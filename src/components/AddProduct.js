@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-// import { productAPI } from '../api/config'; // Commenté car nous utilisons directement axios
+import { productAPI, formatApiError } from '../api/config';
+
 
 const AddProduct = () => {
     const [name, setName] = useState('');
@@ -14,43 +15,38 @@ const AddProduct = () => {
     const fileInputRef = useRef(null);
     const navigate = useNavigate();
 
-    // URL de base de l'API
     const API_BASE_URL = 'https://backend-produit-12.onrender.com';
 
-    // Gestion de l'upload d'image
     const handleImageUpload = (event) => {
         const file = event.target.files[0];
         if (file) {
-            // Vérification du type de fichier
-            if (!file.type.startsWith('image/')) {
-                setError('Veuillez sélectionner un fichier image valide.');
+            // Vérification plus stricte du type MIME
+            const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
+            if (!validTypes.includes(file.type)) {
+                setError('Seuls les formats JPG, PNG et GIF sont acceptés.');
                 return;
             }
             
-            // Vérification de la taille (max 5MB)
             if (file.size > 5 * 1024 * 1024) {
                 setError('La taille de l\'image ne doit pas dépasser 5MB.');
                 return;
             }
-
+    
             setImage(file);
             setError('');
             
-            // Créer un aperçu de l'image
             const reader = new FileReader();
-            reader.onloadend = () => {
-                setImagePreview(reader.result);
+            reader.onload = (e) => {
+                setImagePreview(e.target.result);
             };
             reader.readAsDataURL(file);
         }
     };
 
-    // Déclencher la sélection de fichier
     const triggerFileInput = () => {
         fileInputRef.current?.click();
     };
 
-    // Supprimer l'image sélectionnée
     const removeImage = () => {
         setImage(null);
         setImagePreview(null);
@@ -69,75 +65,61 @@ const AddProduct = () => {
             setError('Le nom du produit est obligatoire.');
             return;
         }
-
-        if (!price || isNaN(parseFloat(price)) || parseFloat(price) < 0) {
+    
+        if (!price || isNaN(parseFloat(price))) {
             setError('Veuillez entrer un prix valide.');
             return;
         }
-
+    
         setIsSubmitting(true);
         setError('');
-        setServerStatus('Connexion au serveur...');
-
+        setServerStatus('Envoi en cours...');
+    
         try {
-            // ✅ CORRECTION : Utiliser FormData pour envoyer l'image
             const formData = new FormData();
+            // Ajout des champs textuels
             formData.append('name', name.trim());
             formData.append('description', description.trim());
-            formData.append('price', parseFloat(price));
+            formData.append('price', parseFloat(price).toString()); // Conversion en string
             
-            // Ajouter l'image si elle existe
+            // Ajout de l'image si elle existe
             if (image) {
-                formData.append('image', image);
+                formData.append('image', image); // Ne pas utiliser image.name ici
             }
-
-            setServerStatus('Envoi du produit...');
-            
-            // ✅ CORRECTION : Envoyer avec les bons headers
+    
+            // Debug: afficher le contenu du FormData
+            for (let [key, value] of formData.entries()) {
+                console.log(key, value);
+            }
+    
             const response = await fetch(`${API_BASE_URL}/products/`, {
                 method: 'POST',
-                body: formData, // Ne pas définir Content-Type, le navigateur le fait automatiquement
+                body: formData, // Pas de Content-Type dans les headers!
             });
-
+    
             if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.detail || `Erreur HTTP ${response.status}`);
+                const errorData = await response.json();
+                throw new Error(errorData.detail || 'Erreur lors de la création');
             }
-
+    
             const result = await response.json();
+            console.log('Réponse du serveur:', result);
             
             setServerStatus('Produit créé avec succès !');
-            console.log('Produit créé:', result);
-            
-            // Redirection après succès
-            setTimeout(() => {
-                navigate('/');
-            }, 1000);
+            setTimeout(() => navigate('/'), 1500);
             
         } catch (error) {
-            console.error("Erreur lors de la création du produit :", error);
-            
-            // Gestion spécifique des erreurs
-            if (error.name === 'TypeError') {
-                setError('🌐 Erreur réseau: Impossible de contacter le serveur. Vérifiez votre connexion.');
-            } else if (error.message.includes('413')) {
-                setError('📸 Image trop volumineuse: Réduisez la taille de votre image.');
-            } else if (error.message.includes('400')) {
-                setError(`❌ Données invalides: ${error.message}`);
-            } else if (error.message.includes('503')) {
-                setError('😴 Serveur en maintenance: Le serveur Render redémarre, réessayez dans 30 secondes.');
-            } else {
-                setError(`❌ Erreur: ${error.message || 'Une erreur inattendue est survenue.'}`);
-            }
-            
+            console.error("Erreur détaillée:", error);
+            setError(error.message || 'Erreur lors de la création du produit');
             setServerStatus('');
         } finally {
             setIsSubmitting(false);
         }
     };
 
+
     const onCancel = () => {
-        navigate('/');
+        navigate('/', { state: { refresh: true } });
     };
     
     return (
