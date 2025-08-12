@@ -533,6 +533,8 @@ const styles = {
         color: '#fff',
         boxShadow: '0 4px 15px rgba(149, 165, 166, 0.3)',
     },
+
+    
 };
 
 // Animation CSS
@@ -579,7 +581,7 @@ const cssAnimations = `
 }
 
 /* Responsive design */
-@media (max-width: 768px) {
+@media (maxWidth: 768px) {
     .products-grid {
         grid-template-columns: 1fr !important;
         gap: 15px !important;
@@ -595,10 +597,33 @@ const cssAnimations = `
         width: 100% !important;
         padding: 12px 20px !important;
         font-size: 16px !important;
-        min-width: auto !important;
+        display: block !important;
+        margin: 0 !important;
+        box-sizing: border-box !important;
+    }
+        
+}
+    '@media (maxWidth: 768px)': {
+    cardActions: {
+        flexDirection: 'column',
+        gap: '8px'
+    },
+    actionButton: {
+        width: '100% !important',  // Force la largeur à 100% pour tous les boutons
+        padding: '12px 20px',
+        fontSize: '16px',
+        display: 'block' // Ajout de cette ligne pour s'assurer du comportement en bloc
+    },
+    editButton: {
+        width: '100% !important', // Double assurance pour le bouton Modifier
+        margin: '0 !important'    // Supprime les marges potentielles
+    },
+    deleteButton: {
+        width: '100% !important'  // Double assurance pour le bouton Supprimer
     }
 }
 `;
+
 
 // Injection des styles dans le DOM
 if (typeof document !== 'undefined') {

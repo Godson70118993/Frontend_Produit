@@ -471,8 +471,42 @@ const styles = {
         boxShadow: '0 4px 15px rgba(149, 165, 166, 0.3)',
     },
 
-
+'@media (max-width: 768px)': {
+        outerContainer: {
+            padding: '10px',
+            paddingTop: '5px',
+        },
+        formContainer: {
+            padding: '20px',
+            borderRadius: '15px',
+        },
+        title: {
+            fontSize: '24px',
+            marginBottom: '20px',
+        },
+        buttonGroup: {
+            flexDirection: 'column',
+            gap: '10px',
+        },
+        button: {
+            width: '100%',
+            padding: '12px',
+        },
+        imagePreview: {
+            height: '200px',
+        },
+        uploadPlaceholder: {
+            padding: '30px 15px',
+        },
+        input: {
+            padding: '12px',
+        },
+        textarea: {
+            padding: '12px',
+        }
+    }
 };
+
 
 // Styles CSS pour les media queries et animations
 const cssStyles = `
